@@ -9,7 +9,8 @@ import ToyContainer from './components/ToyContainer'
 class App extends React.Component{
 
   state = {
-    display: false
+    display: false,
+    toys: []
   }
 
   handleClick = () => {
@@ -19,20 +20,38 @@ class App extends React.Component{
     })
   }
 
+  // Fetch and render the toys
+  componentDidMount() {
+    fetch('http://localhost:3000/toys')
+      .then(res => res.json())
+      .then(toyData => {
+        this.setState({
+          toys: toyData
+        })
+      })
+  }
+
+  // Create a new toy
+  createToy = (newToy) => {
+    this.setState({
+      toys: [...this.state.toys, newToy]
+    })
+  }
+
   render(){
     return (
       <>
         <Header/>
         { this.state.display
             ?
-          <ToyForm/>
+          <ToyForm createToy={this.createToy}/>
             :
           null
         }
         <div className="buttonContainer">
           <button onClick={this.handleClick}> Add a Toy </button>
         </div>
-        <ToyContainer/>
+        <ToyContainer toys={this.state.toys}/>
       </>
     );
   }
